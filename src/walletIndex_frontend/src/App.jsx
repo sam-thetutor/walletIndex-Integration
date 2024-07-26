@@ -1,31 +1,41 @@
-import { useState } from 'react';
-import { walletIndex_backend } from 'declarations/walletIndex_backend';
+import React from "react";
+import { PlugLogin } from "ic-auth";
+import { canisterId } from "../../declarations/icp_ledger_canister";
+import { canisterId as IndexId } from "../../declarations/icp_index_canister";
+import { IndexCanister } from "@dfinity/ledger-icp";
 
-function App() {
-  const [greeting, setGreeting] = useState('');
+const App = () => {
+  const whitelist = [canisterId, IndexId];
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    walletIndex_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+  const handleLogin = async () => {
+    try {
+      const userObject = await PlugLogin(whitelist);
 
+      console.log("user object :", userObject);
+      let IndexCan = IndexCanister.create({
+        canisterId: IndexId,
+        agent: userObject?.agent,
+      });
+      console.log("index :", IndexCan);
+
+      const results = await IndexCan?.getTransactions({
+        certified: false,
+        start: undefined,
+        maxResults: 10,
+        accountIdentifier:
+          "c534cb97073c30f897c8dfdd50c86406b297ae9028299f4592ac4a0cb6692f06",
+      });
+
+      console.log("transactions results :", results);
+    } catch (error) {
+      console.log("error in getting set :", error);
+    }
+  };
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <button style={{ color: "blue", padding: "20px" }} onClick={handleLogin}>
+      Login
+    </button>
   );
-}
+};
 
 export default App;
