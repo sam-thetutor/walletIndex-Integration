@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "walletIndex_backend": {
+      "main": "src/walletIndex_backend/main.mo",
+      "type": "motoko"
+    },
+    "walletIndex_frontend": {
+      "dependencies": [
+        "walletIndex_backend"
+      ],
+      "source": [
+        "src/walletIndex_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "walletIndex_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
